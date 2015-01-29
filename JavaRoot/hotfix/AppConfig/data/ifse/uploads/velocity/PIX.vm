@@ -1,0 +1,118 @@
+## Get the helper class for value conversion
+#set( $message  = $CONTEXT.get("MESSAGE") )
+#set( $Map = $message.attributesMap )
+#set( $pixHelper  = $Map.get("pixHelper"))
+#set( $pixTranList = $message.pixList )
+#set( $hdrMsg = $Map.get("hdrMsg"))
+#set( $helper  = $Map.get("Helper"))
+
+#set( $msgTypeRoute = "" )
+
+#if( "EMPTY" != $helper.getStringValue($hdrMsg.MsgTypeRoute, "EMPTY" ) )
+	#set( $msgTypeRoute = "_${helper.getStringValue($hdrMsg.MsgTypeRoute)}" )
+#end
+
+<?xml version="1.0" encoding="UTF-8"?>
+<tXML>
+	<Header>
+		<Source>$Map.get("SOURCE_TAG")</Source>
+		<Action_Type>Create</Action_Type>
+		<Sequence_Number></Sequence_Number>
+		<Batch_ID></Batch_ID>
+		<Reference_ID></Reference_ID>
+		<User_ID></User_ID>
+		<Password></Password>
+		<Message_Type>PIX${msgTypeRoute}</Message_Type>
+		<Company_ID>$!hdrMsg.companyId</Company_ID>
+		<Msg_Locale>$pixHelper.getDftLocale()</Msg_Locale>
+		<Version>2014</Version>
+	</Header>
+	<Message>
+		#foreach($pixTran in $pixTranList)
+		<PIX>
+			<TransactionType><![CDATA[$!pixTran.tranType]]></TransactionType>
+			<TransactionCode><![CDATA[$!pixTran.tranCode]]></TransactionCode>
+			<TransactionNumber><![CDATA[$!pixTran.tranNbr]]></TransactionNumber>
+			<SequenceNumber><![CDATA[$!pixTran.pixSeqNbr]]></SequenceNumber>
+			<ItemDefinition>
+				<Company><![CDATA[$!pixTran.tcCompanyId]]></Company>
+				<Season><![CDATA[$!pixTran.season]]></Season>
+				<SeasonYear><![CDATA[$!pixTran.seasonYr]]></SeasonYear>
+				<Style><![CDATA[$!pixTran.style]]></Style>
+				<StyleSuffix><![CDATA[$!pixTran.styleSfx]]></StyleSuffix>
+				<Color><![CDATA[$!pixTran.color]]></Color>
+				<ColorSuffix><![CDATA[$!pixTran.colorSfx]]></ColorSuffix>
+				<SecDimension><![CDATA[$!pixTran.secDim]]></SecDimension>
+				<Quality><![CDATA[$!pixTran.qual]]></Quality>
+				<SizeRangeCode><![CDATA[$!pixTran.sizeRangeCode]]></SizeRangeCode>
+				<SizeRelPosninTable><![CDATA[$!pixTran.sizeRelPosnInTable]]></SizeRelPosninTable>
+				<SizeDesc><![CDATA[$!pixTran.sizeDesc]]></SizeDesc>
+				<ItemName><![CDATA[$!pixTran.itemName]]></ItemName>
+			</ItemDefinition>
+			<SubItemFields>
+				<InventoryType><![CDATA[$!pixTran.invnType]]></InventoryType>
+				<ProductStatus><![CDATA[$!pixTran.prodStat]]></ProductStatus>
+				<BatchNumber><![CDATA[$!pixTran.batchNbr]]></BatchNumber>
+				<ItemAttribute1><![CDATA[$!pixTran.skuAttr1]]></ItemAttribute1>
+				<ItemAttribute2><![CDATA[$!pixTran.skuAttr2]]></ItemAttribute2>
+				<ItemAttribute3><![CDATA[$!pixTran.skuAttr3]]></ItemAttribute3>
+				<ItemAttribute4><![CDATA[$!pixTran.skuAttr4]]></ItemAttribute4>
+				<ItemAttribute5><![CDATA[$!pixTran.skuAttr5]]></ItemAttribute5>
+				<CountryOfOrigin><![CDATA[$!pixTran.cntryOfOrgn]]></CountryOfOrigin>
+			</SubItemFields>
+			<PIXFields>
+				<DateCreated><![CDATA[$pixHelper.populateDateTime($pixTran.createDateTime,$hdrMsg.whse,$hdrMsg.companyId)]]></DateCreated>
+				<LPNNumber><![CDATA[$!pixTran.caseNbr]]></LPNNumber>
+				<InvAdjustmentQty><![CDATA[$!pixTran.invnAdjmtQtyStr]]></InvAdjustmentQty>
+				<UnitOfMeasure><![CDATA[$pixHelper.getItemBaseQtyUOM($pixTran.itemId,$pixTran.tcCompanyId)]]></UnitOfMeasure>
+				<InvAdjustmentType><![CDATA[$!pixTran.InvnAdjmtType]]></InvAdjustmentType>
+				<Warehouse><![CDATA[$!pixTran.whse]]></Warehouse>
+				<ReferenceWhse><![CDATA[$!pixTran.refWhse]]></ReferenceWhse>
+				<TransReasonCode><![CDATA[$!pixTran.rsnCode]]></TransReasonCode>
+				<ReceiptsVariance><![CDATA[$!pixTran.rcptVari]]></ReceiptsVariance>
+				<ReceiptsCompleted><![CDATA[$!pixTran.rcptCmpl]]></ReceiptsCompleted>
+				<iLPNsShipped><![CDATA[$!pixTran.casesShpd]]></iLPNsShipped>
+				<UnitsShipped><![CDATA[$!pixTran.unitsShpd]]></UnitsShipped>
+				<iLPNsReceived><![CDATA[$!pixTran.casesRcvd]]></iLPNsReceived>
+				<UnitsReceived><![CDATA[$!pixTran.unitsRcvd]]></UnitsReceived>
+				<ReferenceCode1><![CDATA[$!pixTran.refCodeId1]]></ReferenceCode1>
+				<Reference1><![CDATA[$!pixTran.refField1]]></Reference1>
+				<ReferenceCode2><![CDATA[$!pixTran.refCodeId2]]></ReferenceCode2>
+				<Reference2><![CDATA[$!pixTran.refField2]]></Reference2>
+				<ReferenceCode3><![CDATA[$!pixTran.refCodeId3]]></ReferenceCode3>
+				<Reference3><![CDATA[$!pixTran.refField3]]></Reference3>
+				<ReferenceCode4><![CDATA[$!pixTran.refCodeId4]]></ReferenceCode4>
+				<Reference4><![CDATA[$!pixTran.refField4]]></Reference4>
+				<ReferenceCode5><![CDATA[$!pixTran.refCodeId5]]></ReferenceCode5>
+				<Reference5><![CDATA[$!pixTran.refField5]]></Reference5>
+				<ReferenceCode6><![CDATA[$!pixTran.refCodeId6]]></ReferenceCode6>
+				<Reference6><![CDATA[$!pixTran.refField6]]></Reference6>
+				<ReferenceCode7><![CDATA[$!pixTran.refCodeId7]]></ReferenceCode7>
+				<Reference7><![CDATA[$!pixTran.refField7]]></Reference7>
+				<ReferenceCode8><![CDATA[$!pixTran.refCodeId8]]></ReferenceCode8>
+				<Reference8><![CDATA[$!pixTran.refField8]]></Reference8>
+				<ReferenceCode9><![CDATA[$!pixTran.refCodeId9]]></ReferenceCode9>
+				<Reference9><![CDATA[$!pixTran.refField9]]></Reference9>
+				<ReferenceCode10><![CDATA[$!pixTran.refCodeId10]]></ReferenceCode10>
+				<Reference10><![CDATA[$!pixTran.refField10]]></Reference10>
+				<ActionCode><![CDATA[$!pixTran.ActnCode]]></ActionCode>
+				<CustomReference><![CDATA[$!pixTran.CustomRef]]></CustomReference>
+				<ErrorComment><![CDATA[$!pixTran.ErrorCmnt]]></ErrorComment>
+				<WeightAdjustmentQuantity><![CDATA[$!pixTran.WtAdjmtQtyStr]]></WeightAdjustmentQuantity>
+				<WeightAdjustmentType><![CDATA[$!pixTran.WtAdjmtType]]></WeightAdjustmentType>
+				<ElectronicSignatureUser><![CDATA[$!pixTran.esignUserName]]></ElectronicSignatureUser>
+			</PIXFields>
+			<ListOfSerialNumbers>
+				#foreach($srlPixTran in $pixTran.getSrlPixTrans())
+				<SerialNumber>
+					<SerialSeqNbr><![CDATA[$!srlPixTran.seqNbrStr]]></SerialSeqNbr>
+					<SerialNbr><![CDATA[$!srlPixTran.srlNbr]]></SerialNbr>
+					<SerialAdjType><![CDATA[$!srlPixTran.srlAdjmtType]]></SerialAdjType>
+				</SerialNumber>
+				#end
+			</ListOfSerialNumbers>
+		</PIX>
+		#end
+		## End of PIX list
+	</Message>
+</tXML>

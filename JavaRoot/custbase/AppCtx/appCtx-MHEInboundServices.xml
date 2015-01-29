@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+           http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-3.0.xsd
+            http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">	
+    
+	<!--  DAOs -->
+	<bean id="mheInboundManagerDao" class="com.manh.wmos.services.mheinbound.dao.MHEInboundManagerDAOImpl" lazy-init="true"  parent="wmParentDAO"> </bean>
+
+	<bean id="mheInboundManagerService"
+	   class="com.manh.wmos.services.mheinbound.service.MHEInboundManagerServiceImpl"
+	   scope="singleton" lazy-init="true">
+		<property name="mheInboundManagerDao">
+			<ref bean="mheInboundManagerDao" />
+		</property>
+	</bean>
+
+
+	<bean id="mheInboundLoaderService"
+	   class="com.manh.wmos.services.mheinbound.service.MHEInboundLoaderServiceImpl"
+	   scope="singleton"
+	   init-method="initialize" lazy-init="true">
+		<property name="mheInboundManagerDao">
+			<ref bean="mheInboundManagerDao" />
+		</property>
+		<property name="mheInboundMessageParser">
+			<ref bean="mheInboundMessageDataParser" />
+		</property>
+	</bean>
+
+
+	<bean id="mheInboundMessageDataParser"
+	   class="com.manh.wmos.services.mheinbound.helper.MHEInboundMessageDataParser"
+	   scope="singleton"
+	   lazy-init="true">
+		<property name="mheInboundManagerDao">
+			<ref bean="mheInboundManagerDao" />
+		</property>
+	</bean>
+
+	<bean id="mheContainerDirectiveProcessor"
+	   class="com.manh.wmos.services.mheinbound.processor.HTPCMHEContainerDirectiveProcessor" lazy-init="true">
+		<property name="mheInboundManagerDao">
+			<ref bean="mheInboundManagerDao" />
+		</property>
+	</bean>
+
+	<bean id="IInventoryService" class="com.manh.wmos.services.inventorymgmt.service.InventoryServiceImpl"/>
+	<bean id="ILPNDispositionService" class="com.manh.wmos.services.lpndisposition.service.LPNDispositionServiceSD"/>
+	<bean id="IReceivingService" class="com.manh.wmos.services.receiving.service.ReceivingBusinessManagerServiceImpl">
+		<property name="receivingServiceHelper">
+			<ref bean="com.manh.wmos.services.receiving.helper.IReceivingServiceHelper"/>
+		</property>
+	</bean>
+
+	<bean id="IPutAwayService" class="com.manh.wmos.services.putaway.service.PutawayBusinessServiceImpl">
+		<property name="putawayServiceHelper">
+			<ref
+				bean="com.manh.wmos.services.putaway.helper.IPutawayServiceHelper"/>
+		</property>
+	</bean>
+	
+	<!-- Property Configurer to read values from Java property files -->	
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" abstract="false"  scope="singleton">
+		<property name="location">
+			<value>classpath:runtime.properties</value>
+		</property>
+	</bean>    
+	
+	<tx:annotation-driven transaction-manager="${transaction.manager}"/>
+
+</beans>

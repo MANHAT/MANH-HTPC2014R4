@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:wm="http://www.manh.com/schema/service/tran"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+           http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-3.0.xsd
+            http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+        http://www.manh.com/schema/service/tran
+        http://www.manh.com/schema/service/tran/bean-managed-tx.xsd">  
+<!--  DAOs -->
+
+	<bean id="QVQIManagerDao" class="com.manh.wmos.services.receiving.dao.QVQIManagerDAOImpl" parent="wmParentDAO"/>
+	
+	<bean id="ASNToLPNDao" class="com.manh.wmos.services.receiving.dao.ASNToLPNDAOImpl" parent="wmParentDAO"/>
+
+	<bean id="receivingConfigManagerDao" class="com.manh.wmos.services.receiving.dao.ReceivingConfigManagerDAOImpl" parent="wmParentDAO"/>
+
+	<bean id="receivingManagerDao" class="com.manh.wmos.services.receiving.dao.HTPCReceivingManagerDAOImpl" parent="wmParentDAO"/>
+
+	<bean id="receivingValidator" class="com.manh.wmos.services.receiving.validator.ReceivingValidator"/>
+
+	<bean id="RFSortLpnCORBA" class="com.manh.wmos.services.receiving.service.ReceiveSort_IFCORBAImpl"/>
+
+	<bean id="com.manh.wmos.services.receiving.service.IRFSortLpnService" class="com.manh.wmos.services.receiving.service.RFSortLpnServiceImpl"/>
+	
+	<bean id="com.manh.wmos.services.wmcommon.service.IRFPutawaySortLPNService" class="com.manh.wmos.services.receiving.service.RFSortLpnServiceImpl"/>
+
+	<bean id="cta" class="com.manh.ils.util.monitor.CallTimeAdvice"/>
+
+	<bean id="wm.receiving.cta" class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+		<property name="beanNames" value="ReceivingBusinessManagerServiceImpl">
+		</property>
+		<property name="interceptorNames">
+			<list>
+				<value>cta</value>
+			</list>
+		</property>
+	</bean>
+
+	<!-- Helpers -->
+
+	<!-- Receiving Service helper  -->
+
+
+<bean id="com.manh.wmos.services.inventorymgmt.service.IInventoryLpnLockHelper" class="com.manh.wmos.services.inventorymgmt.service.InventoryLpnLockHelper"/>
+	<!-- Receiving Pix Helper -->
+	<bean id="com.manh.wmos.services.receiving.helper.IReceivingPixHelper" class="com.manh.wmos.services.receiving.helper.ReceivingPixHelper"/>
+
+	<!-- Receive LPN update helper -->
+	<bean id="com.manh.wmos.services.receiving.helper.IReceiveLPNUpdateHelper" class="com.manh.wmos.services.receiving.helper.ReceiveLPNUpdateHelper" lazy-init="true">
+		<property name="receivingServiceHelper">
+			<ref bean="com.manh.wmos.services.receiving.helper.IReceivingServiceHelper"/>
+		</property>
+	</bean>
+
+	<bean id="ReceivingServiceMapper" class="com.manh.wmos.services.receiving.service.WMReceivingServicesMapper"/>
+
+	<!-- Receive LPN event builder -->
+	<bean id="receiveLPNEventBuilder" class="com.manh.wmos.services.receiving.event.ReceiveLPNEventBuilder"/>
+
+	<!-- release QH lock ASN event builder -->
+	<bean id="releaseQHLockAsnEventBuilder" class="com.manh.wmos.services.receiving.event.ReleaseQHLockAsnEventBuilder"/>
+
+	<!-- Verify ASN event builder -->
+	<bean id="verifyAsnEventBuilder" class="com.manh.wmos.services.receiving.event.VerifyAsnEventBuilder"/>
+
+	<!-- Receiving Business Manager Service -->
+	<bean id="ReceivingBusinessManagerServiceImpl" class="com.manh.wmos.services.receiving.service.ReceivingBusinessManagerServiceImpl"
+	
+	lazy-init="default" autowire="default" dependency-check="default" >
+		<property name="receivingServiceHelper">
+			<ref bean="com.manh.wmos.services.receiving.helper.IReceivingServiceHelper"/>
+		</property>
+	</bean>
+
+	<!-- Receiving Manager Service -->
+	<bean id="receivingService" class="com.manh.wmos.services.receiving.service.ReceivingManagerServiceImpl">
+		<property name="receivingPixHelper">
+			<ref bean="com.manh.wmos.services.receiving.helper.IReceivingPixHelper"/>
+		</property>
+	</bean>
+
+	<!-- Receive LPN Service  -->
+	<bean id="com.manh.wmos.services.receiving.service.ReceiveLPNService" class="com.manh.wmos.services.receiving.service.ReceiveLPNServiceImpl">
+		<property name="receivingServiceHelper">
+			<ref bean="com.manh.wmos.services.receiving.helper.IReceivingServiceHelper"/>
+		</property>
+		<property name="rcvUpdateHelper">
+			<ref bean="com.manh.wmos.services.receiving.helper.IReceiveLPNUpdateHelper"/>
+		</property>
+		<property name="rcvPixHelper">
+			<ref bean="com.manh.wmos.services.receiving.helper.IReceivingPixHelper"/>
+		</property>
+		<property name="inventoryLpnLockHelper">
+			<ref bean="com.manh.wmos.services.inventorymgmt.service.IInventoryLpnLockHelper"/>
+		</property>
+	</bean>
+
+	<!-- Verify ASN Service -->
+	<bean id="com.manh.wmos.services.receiving.service.VerifyASNService" class="com.manh.wmos.services.receiving.service.VerifyASNServiceImpl">
+		<property name="receivingPixHelper">
+			<ref bean="com.manh.wmos.services.receiving.helper.IReceivingPixHelper"/>
+		</property>
+	</bean>
+
+	<bean id="ReceivingObjectFactory" class="com.manh.wmos.services.receiving.ReceivingObjectFactory"/>
+
+	<bean id="com.manh.wmos.services.receiving.service.IQVQIManagerService" class="com.manh.wmos.services.receiving.service.QVQIManagerServiceImpl"
+  			lazy-init="default" autowire="default" dependency-check="default" />
+  			
+	<bean id="com.manh.wmos.services.receiving.service.IReceivingConfigManagerService" class="com.manh.wmos.services.receiving.service.ReceivingConfigManagerServiceImpl"
+  			lazy-init="default" autowire="default" dependency-check="default" />
+  			
+  	<bean id="com.manh.wmos.services.receiving.service.IReceivingManagerService" class="com.manh.wmos.services.receiving.service.ReceivingManagerServiceImpl"
+  			lazy-init="default" autowire="default" dependency-check="default" >
+  			<property name="receivingPixHelper">
+				<ref bean="com.manh.wmos.services.receiving.helper.IReceivingPixHelper"/>
+			</property>
+	</bean>
+  			
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" abstract="false" scope="singleton">
+		<property name="location">
+			<value>classpath:runtime.properties</value>
+		</property>
+	</bean>
+	
+	<bean id="ASNToLPNValidator" class="com.manh.wmos.services.receiving.validator.ASNToLPNValidator"/>
+	
+	<bean id="ASNToLPNValidationRule" class="com.manh.wmos.services.receiving.rules.ASNToLPNValidationRule"/>
+	
+	<bean id="ASNToLPNService" class="com.manh.wmos.services.receiving.service.ASNToLPNServiceImpl"/>
+	
+
+	
+	<tx:annotation-driven transaction-manager="${transaction.manager}"/>
+	<wm:annotation-bean-managed/>
+	
+	
+</beans>
+
+

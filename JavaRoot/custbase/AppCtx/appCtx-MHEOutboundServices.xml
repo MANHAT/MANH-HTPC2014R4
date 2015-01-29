@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+           http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-3.0.xsd
+            http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
+	<!--  DAOs -->
+	<bean id="IMHEOutboundDAO" class="com.manh.wmos.services.mheoutbound.dao.MHEOutboundDAOImpl" 
+		lazy-init="true"  parent="wmParentDAO"> 
+	</bean>
+	
+	<bean id="HTPCAgileDAOImpl" class="com.manh.wmos.services.mheoutbound.agile.dao.HTPCAgileDAOImpl" 
+		lazy-init="true"  parent="wmParentDAO"> 
+	</bean>
+	
+		<bean id="IWMMheMsgFormatHdrValidator" 
+			class="com.manh.wmos.services.mheoutbound.validator.WMMheMsgFormatHdrValidator" lazy-init="true">
+		</bean>
+		
+		<bean id="IWMMheMsgFormatDtlValidator" 
+			class="com.manh.wmos.services.mheoutbound.validator.WMMheMsgFormatDtlValidator" lazy-init="true">
+		</bean>
+		
+		<bean id="MHEOutboundServiceImpl"
+		   class="com.manh.wmos.services.mheoutbound.service.HTPCMHEOutboundServiceImpl" lazy-init="true">
+			<property name="mheOutboundDao">
+				<ref bean="IMHEOutboundDAO" />
+			</property>
+		</bean>
+	
+		<bean id="MHEOutboundMessageComposer"
+				class="com.manh.wmos.services.mheoutbound.core.MHEOutboundMessageComposer"
+				lazy-init="true">
+				<property name="eventTableColumnMappingsHelper">
+				   <ref bean="EventTableColumnMappingsHelper" />
+			   </property>
+		</bean>
+	
+		<bean id="EventTableColumnMappingsHelper"
+				class="com.manh.wmos.services.mheoutbound.core.EventTableColumnMappings"
+				lazy-init="true">
+		</bean>
+		
+		<bean id="IAdditionalEventProcessor"
+				class="com.manh.wmos.services.mheoutbound.core.AdditionalEventProcessor"
+				lazy-init="true">
+		</bean>
+		
+		<bean id="TableJoinDictionary"
+				class="com.manh.wmos.services.mheoutbound.core.TableJoinDictionary"
+				lazy-init="true">
+		</bean>
+		
+		<bean id="com.manh.wmos.services.mheoutbound.core.DelimitedMHEMessageFormatter"
+				class="com.manh.wmos.services.mheoutbound.core.DelimitedMHEMessageFormatter"
+				lazy-init="true">
+		</bean>
+		<bean id="com.manh.wmos.services.mheoutbound.core.XMLMHEMessageFormatter"
+			class="com.manh.wmos.services.mheoutbound.core.XMLMHEMessageFormatter"
+			lazy-init="true">
+		</bean>
+	
+		<bean id="com.manh.wmos.services.mheoutbound.core.FixedMHEMessageFormatter"
+			class="com.manh.wmos.services.mheoutbound.core.FixedMHEMessageFormatter"
+			lazy-init="true">
+		</bean>
+		
+		<bean id="IMHEFileWriter"
+			class="com.manh.wmos.services.mheoutbound.core.MHEFileWriter"
+			lazy-init="true">
+		</bean>
+		
+		<bean id="com.manh.wmos.services.mheoutbound.service.IMHEOutboundService"
+		class="com.manh.wmos.services.mheoutbound.service.HTPCMHEOutboundServiceImpl"
+		lazy-init="default" autowire="default" dependency-check="default" />
+
+		<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" abstract="false" scope="singleton">
+         <property name="location">
+                    <value>classpath:runtime.properties</value>
+         </property>
+     </bean>
+     
+     <tx:annotation-driven transaction-manager="${transaction.manager}"/>
+     
+</beans>

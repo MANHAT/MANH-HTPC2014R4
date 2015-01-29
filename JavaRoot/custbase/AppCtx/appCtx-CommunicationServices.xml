@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-3.0.xsd
+            http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
+
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" abstract="false" scope="singleton">
+    	<property name="location">
+        	<value>classpath:runtime.properties</value>
+        </property>
+    </bean>
+
+   <tx:annotation-driven transaction-manager="${transaction.manager}"/>
+
+	<bean id="MHECorbaServiceImpl" class="com.manh.wmos.services.communication.corba.mhe.MHECorbaServiceImpl"/>
+
+	<!-- bean id="WMCommunicationManagerServiceImpl" class="com.manh.wmos.services.communication.ejb.WMCommunicationManagerSBBean"/>
+
+	<bean id="CBOTransComm" class="com.manh.cbo.transactional.application.interfaces.commmgr.CBOTransCommSBBean"/>
+
+	<bean id="CBOCommSBBean" class="com.manh.cbo.importservice.interfaces.commmgr.CBOCommSBBean"/>
+
+	<bean id="BaseServicesCommMgr" class="com.manh.baseservices.commmgr.BaseServicesCommMgrBean"/-->
+
+	<bean id="AppointmentMessageTranslator" class="com.manh.appointment.ui.message.AppointmentMessageTranslator"/>
+
+	<bean id="CommunicationObjectFactory" class="com.manh.wmos.services.communication.CommunicationObjectFactory"/>
+
+	<bean id="outwardEventAdapter" class="com.manh.wmos.services.communication.service.EventAdaptor"/>
+
+	<bean id="XmlGroupMsgFactory" class="com.manh.wmos.services.communication.event.factory.XmlGroupMsgFactory"/>
+	<bean id="EventXmlGroupProcessor" class="com.manh.wmos.services.communication.event.processor.EventXmlGroupProcessor"/>
+	<bean id="ShipConfXmlGroupProcessor" class="com.manh.wmos.services.communication.event.processor.ShipConfXmlGroupProcessor"/>
+
+	<bean id="XmlMsgFactory" class="com.manh.wmos.services.communication.event.factory.XmlMsgFactory"/>
+
+	<bean id="XmlMsgHandlerFactory" class="com.manh.wmos.services.communication.event.factory.XmlMsgHandlerFactory"/>
+	<bean id="EventXmlMsgHandler" class="com.manh.wmos.services.communication.event.handler.EventXmlMsgHandler"/>
+	<bean id="ShipConfXmlMsgHandler" class="com.manh.wmos.services.communication.event.handler.ShipConfXmlMsgHandler"/>
+	<bean id="AsnXmlMsgHandler" class="com.manh.wmos.services.communication.event.handler.AsnXmlMsgHandler"/>
+	<bean id="ShipmentConfXmlHandler" class="com.manh.wmos.services.communication.event.handler.ShipmentConfXmlHandler"/>
+
+	<bean id="XMLMsgLoaderFactory" class="com.manh.wmos.services.communication.event.factory.XmlMsgLoaderFactory"/>
+	<bean id="EventXMLMsgLoader" class="com.manh.wmos.services.communication.event.loader.EventXmlMsgLoader"/>
+	<bean id="ShipConfMsgLoader" class="com.manh.wmos.services.communication.event.loader.ShipConfMsgLoader"/>
+	<bean id="AsnMsgLoader" class="com.manh.wmos.services.communication.event.loader.AsnMsgLoader"/>
+	<bean id="ShipmentConfMsgLoader" class="com.manh.wmos.services.communication.event.loader.ShipmentConfMsgLoader"/>
+
+
+	<bean id="EventHelper" class="com.manh.wmos.services.communication.event.helper.EventHelper"/>
+
+	<bean id="DoUpdtPix" class="com.manh.wmos.services.communication.event.template.processor.DoUpdtEventProcessor"/>
+	<bean id="InvnEventPix" class="com.manh.wmos.services.communication.event.template.processor.InvnEventProcessor"/>
+	<bean id="InvnSyncPix" class="com.manh.wmos.services.communication.event.template.processor.InvnSyncProcessor"/>
+	<!--bean id="InvnUpdtPix" class="com.manh.wmos.services.communication.event.template.processor.InvnUpdtEventProcessor"/>
+	<bean id="InvnCorrPix" class="com.manh.wmos.services.communication.event.template.processor.InvnCorrEventProcessor"/>
+	<bean id="InvnChngStPix" class="com.manh.wmos.services.communication.event.template.processor.InvnChngStEventProcessor"/-->
+	<bean id="PIX" class="com.manh.wmos.services.communication.event.template.processor.PixProcessor"/>
+	<bean id="VendorPerfPix" class="com.manh.wmos.services.communication.event.template.processor.VendorPerfPixProcessor"/>
+	<bean id="RSDOCreatePix" class="com.manh.wmos.services.communication.event.template.processor.RSDOUpdtEventProcessor"/>
+
+	<bean id="AsnEEMMsg" class="com.manh.wmos.services.communication.event.template.processor.AsnMsgProcessor"/>
+	<bean id="AsnExportService" class="com.manh.wmos.services.communication.service.HTPCAsnExportService"/>
+
+	<bean id="ShipmentShipConfirm" class="com.manh.wmos.services.communication.event.template.processor.ShipmentShipConfProcessor" />
+	<bean id="DoShipShipConfirm" class="com.manh.wmos.services.communication.event.template.processor.DoShipShipConfProcessor" />
+	<bean id="DoUpdateShipConfirm" class="com.manh.wmos.services.communication.event.template.processor.DoUpdateShipConfProcessor" />
+	<bean id="ShipmentConfirm" class="com.manh.wmos.services.communication.event.template.processor.ShipmentConfirmProcessor" />
+
+
+	<bean id="ItemSubParser" class="com.manh.wmos.services.communication.itemsub.ItemSubParser" />
+	<bean id="ItemSubHelper" class="com.manh.wmos.services.communication.itemsub.ItemSubHelper" />
+	<bean id="ItemSubValidator" class="com.manh.wmos.services.communication.itemsub.ItemSubValidator" />
+
+	<bean id="OutptDelvNotificationXmlMsgHandler" class="com.manh.wmos.services.communication.event.handler.OutptDelvNotificationXmlMsgHandler"/>
+	<bean id="OutptDelvNotificationMsgLoader" class="com.manh.wmos.services.communication.event.loader.OutptDelvNotificationMsgLoader"/>
+	<bean id="OutptDelvNotificationProcessor" class="com.manh.wmos.services.communication.event.template.processor.OutptDelvNotificationProcessor" />
+
+	<bean id="com.manh.wmos.services.communication.service.IPixExportScheduleService" class="com.manh.wmos.services.communication.service.PixExportScheduleServiceImpl" lazy-init="default"
+	autowire="default" dependency-check="default"/>
+
+	<bean id="com.manh.wmos.services.communication.service.IWMCommunicationService" class="com.manh.wmos.services.communication.service.WMCommunicationServiceImpl" lazy-init="default"
+	autowire="default" dependency-check="default"/>
+
+	<bean id="com.manh.wmos.services.communication.service.IShipConfirmDataAccessService" class="com.manh.wmos.services.communication.service.ShipConfirmDataAccessServiceImpl" lazy-init="default"
+	autowire="default" dependency-check="default"/>
+
+	<bean id="com.manh.wmos.services.communication.service.IShipConfirmService" class="com.manh.wmos.services.communication.service.ShipConfirmServiceImpl" lazy-init="default"
+	autowire="default" dependency-check="default"/>
+
+
+</beans>

@@ -1,0 +1,59 @@
+## Get the helper class for value conversion
+#set( $header = $CONTEXT.get("HEADER") )
+#set( $helper = $CONTEXT.get("Helper") )
+#set( $orderLoadReq  = $CONTEXT.get("data") )
+#set( $headerData = $orderLoadReq.header )
+#set( $shipData = $headerData.ship )
+#set( $orderData = $headerData.order )
+#set( $recordData = $headerData.record )
+#set( $appHost = $CONTEXT.get("appHost")) 
+#set( $appPort = $CONTEXT.get("appPort")) 
+#set( $vmHelper = $CONTEXT.get("vmHelper")) 
+<?xml version="1.0" encoding="utf-8"?>
+<PierbridgeOrderLoadRequest>
+<OrderHeaderID>$orderLoadReq.orderHeaderId</OrderHeaderID>
+<UserName>$orderLoadReq.username</UserName>
+<Header>
+	<OrderNumber>$headerData.orderNumber</OrderNumber>
+	<DeliverBy>$headerData.deliveryBy</DeliverBy>
+	<Ship>
+		<To>$shipData.to</To>
+		<Company>$shipData.company</Company>
+		<AddressOne>$shipData.addressOne</AddressOne>
+		<AddressTwo>$shipData.addressTwo</AddressTwo>
+		<AddressThree>$shipData.addressThree</AddressThree>
+		<City>$shipData.city</City>
+		<State>$shipData.state</State>
+		<Zip>$shipData.zip</Zip>
+		<Country>$shipData.country</Country>
+		<Phone>$shipData.phone</Phone>
+		<Email>$shipData.email</Email>
+	</Ship>
+	<Order>
+		<ShipViaCode>$orderData.shipViaCode</ShipViaCode>
+	</Order>
+	<Record>
+		<KeyThree>$recordData.keyThree</KeyThree>
+	</Record>
+</Header>
+<LineItems>
+#foreach( $lineItms in $orderLoadReq.lineItems )
+	<LineItem>
+		#set( $lineItm = $lineItms.lineItem )
+		#set( $itm = $lineItm.item )
+		#set( $international = $lineItm.international )
+		<Item>
+			<PartNumber>$itm.partNumber</PartNumber>
+			<Description>$itm.description</Description>
+			<Quantity>$itm.quantity</Quantity>
+			<UnitPrice>$itm.unitPrice</UnitPrice>
+			<UnitsOfMeasure>$itm.unitOfMeasure</UnitsOfMeasure>
+			<Weight>$itm.weight</Weight>
+		</Item>
+		<International>
+			<CountryOfOrigin>$international.countryOfOrigin</CountryOfOrigin>
+		</International>
+	</LineItem>
+#end
+</LineItems>
+</PierbridgeOrderLoadRequest>

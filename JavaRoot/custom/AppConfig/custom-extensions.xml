@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<custom-extensions>
+ 
+ <!-- EX01 Start -->
+	<spring parent="wmParentDAO" lazy-init="true" class="com.manh.wmos.services.outbound.agile.dao.HTPCAgileOrderLoadRespDAOImpl" id="com.manh.wmos.services.outbound.agile.dao.IHTPCAgileOrderLoadRespDAO"> </spring> 
+	
+	<spring class="com.manh.wmos.services.outbound.agile.service.HTPCAgileOrderLoadRespServiceImpl" id="com.manh.wmos.services.outbound.agile.service.IHTPCAgileOrderLoadRespService"> </spring>
+ <!-- EX01 End -->
+	
+	<!-- EX05 Label Substitution for Order Notes starts -->
+	<spring id="com.manh.labelprinting.printing.util.LabelUtil"
+		class="com.manh.labelprinting.printing.util.HTPCLabelUtil" scope="prototype"/>
+	<spring id="labelPrintClassDAO"
+		class="com.manh.labelprinting.printing.dao.HTPCLabelPrintClassDAOImpl">
+		<property name="persistenceManager">
+		<ref bean="globalPersistenceManager" />
+		</property>
+		<property name="commandBroker">
+		  <ref bean="globalCommandBroker" />
+		</property>
+    </spring>
+
+	<!-- EX05 Label Substitution for Order Notes End -->
+	
+	<!-- EX02 -->
+	<spring id="com.manh.te.manifest.application.service.IManifestLpnProcessor"
+		class="com.manh.te.manifest.application.service.HTPCManifestLpnProcessor"/>
+	<!-- EX02 -->
+  
+</custom-extensions>

@@ -1,0 +1,438 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:wm="http://www.manh.com/schema/service/tran"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+           http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-3.0.xsd
+            http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+        http://www.manh.com/schema/service/tran
+        http://www.manh.com/schema/service/tran/bean-managed-tx.xsd">
+	<!-- DAOs -->
+
+	<bean id="outboundConfigManagerDAO"
+		class="com.manh.wmos.services.outbound.dao.OutboundConfigManagerDAOImpl"
+		parent="wmParentDAO" />
+
+	<bean id="inquiriesManagerDAO"
+		class="com.manh.wmos.services.outbound.dao.InquiriesManagerDAOImpl"
+		parent="wmParentDAO" />
+
+	<bean id="pickticketManagerDAO"
+		class="com.manh.wmos.services.outbound.dao.PickticketManagerDAOImpl"
+		parent="wmParentDAO" />
+
+	<bean id="cartonManagerDAO"
+		class="com.manh.wmos.services.outbound.dao.CartonManagerDAOImpl"
+		parent="wmParentDAO" />
+
+	<bean id="orderConsolManagerDAO"
+		class="com.manh.wmos.services.outbound.dao.OrderConsolManagerDAOImpl"
+		parent="wmParentDAO" />
+
+	<bean id="waveManagerDAO" class="com.manh.wmos.services.outbound.dao.WaveManagerDAOImpl"
+		parent="wmParentDAO" />
+
+	<bean id="obShipmentAndCloseDAO"
+		class="com.manh.wmos.services.outbound.dao.ObShipmentAndCloseDAOImpl"
+		parent="wmParentDAO" />
+
+	<bean id="storeDistroManagerDAO"
+		class="com.manh.wmos.services.outbound.dao.StoreDistroManagerDAOImpl"
+		parent="wmParentDAO" />
+
+	<bean id="returnablesManagerDAO"
+		class="com.manh.wmos.services.outbound.dao.ReturnablesManagerDAOImpl"
+		parent="wmParentDAO" />
+
+	<bean id="pickPackManagerDAO"
+		class="com.manh.wmos.services.outbound.dao.PickPackManagerDAOImpl"
+		parent="wmParentDAO" />
+
+	<bean id="pickZoneManagerDAO"
+		class="com.manh.wmos.services.outbound.dao.PickZoneManagerDAOImpl"
+		parent="wmParentDAO" />
+
+	<bean id="pickCartPlanManagerDAO"
+		class="com.manh.wmos.services.outbound.dao.PickCartPlanManagerDAOImpl"
+		parent="wmParentDAO" />
+
+	<bean id="outboundQAManagerDao"
+		class="com.manh.wmos.services.outbound.dao.OutboundQAManagerDAOImpl"
+		parent="wmParentDAO" />
+
+	<bean id="packCartonManagerDAO"
+		class="com.manh.wmos.services.outbound.dao.PackCartonManagerDAOImpl"
+		parent="wmParentDAO" />
+
+	<bean id="TaskExecutionManagerDAO"
+		class="com.manh.wmos.services.taskmgmt.dao.TaskExecutionManagerDAOImpl"
+		parent="wmParentDAO" />
+
+	<bean id="AddCaseToOrderManagerServiceImpl"
+		class="com.manh.wmos.services.outbound.service.AddCaseToOrderManagerServiceImpl"
+		parent="wmParentDAO" />
+
+	<bean id="PickticketManagerServiceImpl"
+		class="com.manh.wmos.services.outbound.service.PickticketManagerServiceImpl" />
+
+	<bean id="MiscOLPNServiceImpl"
+		class="com.manh.wmos.services.outbound.service.MiscOLPNServiceImpl" />
+
+	<bean id="containerTypeManagerDao"
+		class="com.manh.wmos.services.outbound.dao.ContainerTypeManagerDAOImpl"
+		parent="wmParentDAO" />
+
+	<bean id="containerTypeManagerService"
+		class="com.manh.wmos.services.outbound.service.ContainerTypeManagerServiceImpl" />
+
+	<bean id="pickPackService"
+		class="com.manh.wmos.services.outbound.service.PickPackManagerServiceImpl" />
+
+	<bean id="CartonManagerServiceImpl"
+		class="com.manh.wmos.services.outbound.service.CartonManagerServiceImpl" />
+
+	<bean id="PullCartonServiceImpl"
+		class="com.manh.wmos.services.outbound.service.PullCartonServiceImpl" />
+
+	<bean id="RFVASTrackManagerServiceImpl"
+		class="com.manh.wmos.services.outbound.service.RFVASTrackManagerServiceImpl" />
+
+	<bean id="RFVASPktManagerServiceImpl"
+		class="com.manh.wmos.services.outbound.service.RFVASPktManagerServiceImpl" />
+
+	<bean id="IPkVASTrack_IFCORBA"
+		class="com.manh.wmos.services.outbound.service.PkVASTrack_IFCORBAImpl" />
+
+	<bean id="IVAS_IFCORBA" class="com.manh.wmos.services.outbound.service.VAS_IFCORBAImpl" />
+
+	<bean id="RFPickPackManagerServiceImpl"
+		class="com.manh.wmos.services.outbound.service.RFPickPackManagerServiceImpl" />
+
+	<bean id="RFPackToteManagerServiceImpl"
+		class="com.manh.wmos.services.outbound.service.RFPackToteManagerServiceImpl" />
+
+	<bean id="RFAuditCartonManagerServiceImpl"
+		class="com.manh.wmos.services.outbound.service.RFAuditCartonManagerServiceImpl" />
+
+	<bean id="IAuditCarton_IFCORBA"
+		class="com.manh.wmos.services.outbound.service.AuditCarton_IFCORBAImpl" />
+
+	<bean id="RFPrintPickLabelManagerServiceImpl"
+		class="com.manh.wmos.services.outbound.service.RFPrintPickLabelManagerServiceImpl" />
+
+	<bean id="RFAnchorOutboundLPNManagerServiceImpl"
+		class="com.manh.wmos.services.outbound.service.RFAnchorOutboundLPNManagerServiceImpl" />
+
+	<bean id="printPickLabelCORBA"
+		class="com.manh.wmos.services.outbound.service.PrintPickLabel_IFCORBAImpl" />
+
+	<bean id="RFUnloadContainerServiceImpl"
+		class="com.manh.wmos.services.outbound.service.RFUnloadContainerServiceImpl">
+		<property name="validator" ref="IObLoadAndCloseValidator" />
+	</bean>
+
+	<bean id="RFPalletizeLPNServiceImpl"
+		class="com.manh.wmos.services.outbound.service.RFPalletizeLPNServiceImpl" />
+
+	<bean id="IAnchorCarton_IFCORBA"
+		class="com.manh.wmos.services.outbound.service.AnchorCarton_IFCORBAImpl" />
+
+	<bean id="IPkPacking_IFCORBA"
+		class="com.manh.wmos.services.outbound.service.PkPacking_IFCORBAImpl" />
+
+	<bean id="RFPrintPriceTicketServiceImpl"
+		class="com.manh.wmos.services.outbound.service.RFPrintPriceTicketServiceImpl" />
+
+	<bean id="IRFPkPrintPrcTkt_IFCORBA"
+		class="com.manh.wmos.services.outbound.service.RFPkPrintPrcTkt_IFCORBAImpl" />
+
+	<bean id="PalletizeLPNCORBA"
+		class="com.manh.wmos.services.outbound.service.PalletizeLPN_IFCORBAImpl" />
+
+	<bean id="RFCancelCartonServiceImpl"
+		class="com.manh.wmos.services.outbound.service.RFCancelCartonServiceImpl" />
+
+	<bean id="CancelCartonCORBA"
+		class="com.manh.wmos.services.outbound.service.CancelCarton_IFCORBAImpl" />
+
+	<bean id="IPkPullCarton_IFCORBA"
+		class="com.manh.wmos.services.outbound.service.PkPullCarton_IFCORBAImpl" />
+
+	<bean id="RFAssignRouteServiceImpl"
+		class="com.manh.wmos.services.outbound.service.RFAssignRouteServiceImpl" />
+
+	<bean id="AssignRoute_IFCORBAImpl"
+		class="com.manh.wmos.services.outbound.service.AssignRoute_IFCORBAImpl" />
+
+	<bean id="RFPutToZoneManagerServiceImpl"
+		class="com.manh.wmos.services.outbound.service.RFPutToZoneManagerServiceImpl" />
+
+	<bean id="putToZoneCORBA"
+		class="com.manh.wmos.services.outbound.service.PutToZone_IFCORBAImpl" />
+
+	<bean id="RFPltzLpnPCCServiceImpl"
+		class="com.manh.wmos.services.outbound.service.RFPltzLpnPCCServiceImpl" />
+
+	<bean id="RFPickCartManagerServiceImpl"
+		class="com.manh.wmos.services.outbound.service.RFPickCartManagerServiceImpl" />
+
+	<bean id="IPkPickCart_IFCORBA"
+		class="com.manh.wmos.services.outbound.service.PkPickCart_IFCORBAImpl" />
+
+	<bean id="IOBQAEngine_IFCORBA"
+		class="com.manh.wmos.services.outbound.service.OBQAEngine_IFCORBAImpl" />
+
+	<bean id="RFObLockContainerManagerServiceImpl"
+		class="com.manh.wmos.services.outbound.service.RFObLockContainerManagerServiceImpl" />
+
+	<bean id="IPkGenDvrt_IFCORBA"
+		class="com.manh.wmos.services.outbound.service.PkGenDvrt_IFCORBAImpl" />
+
+	<bean id="RFGenerateDivertServiceImpl"
+		class="com.manh.wmos.services.outbound.service.RFGenerateDivertServiceImpl" />
+
+	<bean id="IPkAddCase_IFCORBA"
+		class="com.manh.wmos.services.outbound.service.PkAddCase_IFCORBAImpl" />
+
+	<bean id="RFAddCaseToPktManagerServiceImpl"
+		class="com.manh.wmos.services.outbound.service.RFAddCaseToPktManagerServiceImpl" />
+
+	<bean id="RFPrintObDocumentationServiceImpl"
+		class="com.manh.wmos.services.outbound.service.RFPrintObDocumentationServiceImpl" />
+
+	<bean id="IReprintServer_IFCORBA"
+		class="com.manh.wmos.services.outbound.service.ReprintServer_IFCORBAImpl" />
+
+	<bean id="RFLoadContainerServiceImpl"
+		class="com.manh.wmos.services.outbound.service.RFLoadContainerServiceImpl">
+		<property name="validator" ref="IObLoadAndCloseValidator" />
+	</bean>
+
+	<bean id="IObLoadAndCloseValidator"
+		class="com.manh.wmos.services.outbound.validator.ObLoadAndCloseValidator" />
+
+	<bean id="RFSpltCmbnServiceImpl"
+		class="com.manh.wmos.services.outbound.service.RFSpltCmbnServiceImpl" />
+
+	<bean id="IPkCombineCartons_IFCORBA"
+		class="com.manh.wmos.services.outbound.service.PkCombineCartons_IFCORBAImpl" />
+
+	<bean id="RFPutToStoreManagerServiceImpl"
+		class="com.manh.wmos.services.outbound.service.RFPutToStoreManagerServiceImpl" />
+
+	<bean id="RFCloseTrailerServiceImpl"
+		class="com.manh.wmos.services.outbound.service.RFCloseTrailerServiceImpl">
+		<property name="validator" ref="IObLoadAndCloseValidator" />
+	</bean>
+
+	<bean id="RFLoadTrailerServiceImpl"
+		class="com.manh.wmos.services.outbound.service.RFLoadTrailerServiceImpl">
+		<property name="validator" ref="IObLoadAndCloseValidator" />
+	</bean>
+
+	<bean id="PackCartonServiceImpl"
+		class="com.manh.wmos.services.outbound.service.PackCartonServiceImpl" />
+
+	<bean id="RFPackingManagerServiceImpl"
+		class="com.manh.wmos.services.outbound.service.RFPackingManagerServiceImpl" />
+
+	<bean id="RFCubedNDPkgServiceImpl"
+		class="com.manh.wmos.services.outbound.service.RFCubedNDPkgServiceImpl" />
+
+	<bean id="ITEService" class="com.manh.wmos.services.outbound.service.HTPCTEServiceImpl">
+		<property name="transExecService" ref="TEPlanningService" />
+		<property name="manifestService" ref="IManifestService" />
+		<property name="trackingNumberService" ref="ITrackingNumberService" />
+	</bean>
+
+	<bean id="TEPlanningService" class="com.manh.te.planning.engine.service.TEPlanningServiceImpl" />
+
+
+	<bean id="WaveServiceImpl" class="com.manh.wmos.services.outbound.service.WaveServiceImpl" />
+
+	<bean id="IWaveService_IFCORBA"
+		class="com.manh.wmos.services.outbound.service.WaveService_IFCORBAImpl" />
+
+	<bean id="RFPackCubedDirectedManagerServiceImpl"
+		class="com.manh.wmos.services.outbound.service.RFPackCubedDirectedManagerServiceImpl" />
+
+	<bean id="RFPackNonCubedDirectedManagerServiceImpl"
+		class="com.manh.wmos.services.outbound.service.RFPackNonCubedDirectedManagerServiceImpl" />
+
+	<bean id="RFPrintLabelServiceImpl"
+		class="com.manh.wmos.services.outbound.service.RFPrintLabelServiceImpl" />
+
+	<bean id="IManifestService" class="com.manh.te.manifest.application.service.ManifestServiceImpl" />
+
+	<bean id="ITrackingNumberService"
+		class="com.manh.te.trackingNbr.service.TrackingNumberServiceImpl" />
+
+	<bean id="IOLPNManagerService"
+		class="com.manh.wmos.services.outbound.service.CartonManagerServiceImpl" />
+
+	<bean id="DynamicRouteRequestServiceImpl"
+		class="com.manh.wmos.services.communication.service.DynamicRouteRequestServiceImpl" />
+
+	<bean id="NextUpNbrBDImpl"
+		class="com.manh.cboframework.nextupnbr.application.NextUpNbrServiceImpl" />
+
+	<bean id="OutboundInterfaceServiceImpl"
+		class="com.manh.wmos.services.outbound.service.HTPCOutboundInterfaceServiceImpl" />
+
+	<bean id="IOutboundHelper" class="com.manh.wmos.services.outbound.helper.OutboundHelper" />
+
+	<bean id="IManifestedLpnLMHelper"
+		class="com.manh.wmos.services.outbound.helper.ManifestedLpnLMHelper" />
+
+	<bean id="ObLoadCloseShipmentServiceImpl"
+		class="com.manh.wmos.services.outbound.service.ObLoadCloseShipmentServiceImpl">
+		<property name="validator" ref="IObLoadAndCloseValidator" />
+	</bean>
+
+	<bean id="OutboundObjectFactory" class="com.manh.wmos.services.outbound.OutboundObjectFactory" />
+	<bean id="com.manh.wmos.services.outbound.service.IContainerTypeManagerService"
+		class="com.manh.wmos.services.outbound.service.ContainerTypeManagerServiceImpl"
+		lazy-init="default" autowire="default" dependency-check="default" />
+		
+	<bean id="com.manh.wmos.services.outbound.service.IInquiriesManagerService"
+		class="com.manh.wmos.services.outbound.service.InquiriesManagerServiceImpl"
+		lazy-init="default" autowire="default" dependency-check="default" />
+		
+	<bean id="com.manh.wmos.services.outbound.service.IOutboundExecutionManagerService"
+		class="com.manh.wmos.services.outbound.service.OutboundExecutionManagerServiceImpl"
+		lazy-init="default" autowire="default" dependency-check="default" />
+		
+	<bean id="com.manh.wmos.services.outbound.service.IOutboundInterfaceService"
+		class="com.manh.wmos.services.outbound.service.OutboundInterfaceServiceImpl"
+		lazy-init="default" autowire="default" dependency-check="default" />
+		
+	<bean id="com.manh.wmos.services.outbound.service.IOutboundQAManagerService"
+		class="com.manh.wmos.services.outbound.service.OutboundQAManagerServiceImpl"
+		lazy-init="default" autowire="default" dependency-check="default" />
+
+	<bean id="com.manh.wmos.services.outbound.service.IPickCartPlanManagerService"
+		class="com.manh.wmos.services.outbound.service.PickCartPlanManagerServiceImpl"
+		lazy-init="default" autowire="default" dependency-check="default" />
+	
+	<bean id="com.manh.wmos.services.outbound.service.IPickPackManagerService"
+		class="com.manh.wmos.services.outbound.service.PickPackManagerServiceImpl"
+		lazy-init="default" autowire="default" dependency-check="default" />
+
+	<bean id="com.manh.wmos.services.outbound.service.IPickZoneManagerService"
+		class="com.manh.wmos.services.outbound.service.PickZoneManagerServiceImpl"
+		lazy-init="default" autowire="default" dependency-check="default" />
+
+	<bean id="com.manh.wmos.services.outbound.service.IReturnablesManagerService"
+		class="com.manh.wmos.services.outbound.service.ReturnablesManagerServiceImpl"
+		lazy-init="default" autowire="default" dependency-check="default" />
+	
+	<bean id="com.manh.wmos.services.outbound.service.IWaveConfigManager"
+		class="com.manh.wmos.services.outbound.service.WaveConfigManagerServiceImpl"
+		lazy-init="default" autowire="default" dependency-check="default" />
+	
+	<bean id="com.manh.wmos.services.outbound.service.IWaveExecManagerService"
+		class="com.manh.wmos.services.outbound.service.WaveExecManagerServiceImpl"
+		lazy-init="default" autowire="default" dependency-check="default" />
+	
+	<bean id="com.manh.wmos.services.outbound.service.IWaveManagerService"
+		class="com.manh.wmos.services.outbound.service.WaveManagerServiceImpl"
+		lazy-init="default" autowire="default" dependency-check="default" />
+	
+	<bean id="com.manh.wmos.services.outbound.service.IWaveQManagerService"
+		class="com.manh.wmos.services.outbound.service.WaveQManagerServiceImpl"
+		lazy-init="default" autowire="default" dependency-check="default" />
+	
+	<bean id="com.manh.wmos.services.outbound.service.IOutboundServices"
+		class="com.manh.wmos.services.outbound.service.OutboundServicesImpl"
+		lazy-init="default" autowire="default" dependency-check="default" />
+	
+	<bean id="com.manh.wmos.services.outbound.service.ILoadContainerServices"
+		class="com.manh.wmos.services.outbound.service.LoadContainerServicesImpl"
+		lazy-init="default" autowire="default" dependency-check="default" />
+	
+	<bean id="com.manh.wmos.services.outbound.service.IOrderConsolManagerService"
+		class="com.manh.wmos.services.outbound.service.OrderConsolManagerServiceImpl"
+		lazy-init="default" autowire="default" dependency-check="default" />
+	
+	<bean id="com.manh.wmos.services.outbound.service.ILoadTrailerService"
+		class="com.manh.wmos.services.outbound.service.LoadTrailerServiceImpl"
+		lazy-init="default" autowire="default" dependency-check="default" />
+	
+	<bean id="com.manh.wmos.services.outbound.service.ICartonManagerService"
+		class="com.manh.wmos.services.outbound.service.CartonManagerServiceImpl"
+		lazy-init="default" autowire="default" dependency-check="default" />
+		
+		<bean id="com.manh.wmos.services.outbound.service.IPickticketManagerService"
+		class="com.manh.wmos.services.outbound.service.PickticketManagerServiceImpl"
+		lazy-init="default" autowire="default" dependency-check="default" />
+		
+	<bean id="com.manh.wmos.services.outbound.service.IStoreDistroManagerService"
+		class="com.manh.wmos.services.outbound.service.StoreDistroManagerServiceImpl"
+		lazy-init="default" autowire="default" dependency-check="default" />
+		
+		<bean id="com.manh.wmos.services.outbound.service.IOutboundConfigManagerService"
+		class="com.manh.wmos.services.outbound.service.OutboundConfigManagerServiceImpl"
+		lazy-init="default" autowire="default" dependency-check="default" />
+	
+	<!-- Event Builders -->
+	<bean id="assignLpnToShipmentEventBuilder"
+		class="com.manh.wmos.services.outbound.helper.AssignLpnToShipmentEventBuilder" />
+
+	<bean id="unassignLpnToShipmentEventBuilder"
+		class="com.manh.wmos.services.outbound.helper.UnAssignLpnToShipmentEventBuilder" />
+
+	<bean id="closeShipmentEventBuilder"
+		class="com.manh.wmos.services.outbound.helper.CloseShipmentEventBuilder" />
+	<bean id="IWaveRetailRouteHelper"
+		class="com.manh.wmos.services.outbound.helper.WaveRetailRouteHelper" />
+	<bean id="IOutboundLockHelper"
+		class="com.manh.wmos.services.outbound.helper.OutboundLockHelper" />
+
+
+	<bean id="OutboundLockDao" class="com.manh.wmos.services.outbound.dao.OutboundLockDaoImpl">
+		<property name="persistenceManager">
+			<ref bean="whsePersistenceManager" />
+		</property>
+		<property name="commandBroker">
+			<ref bean="whseCommandBroker" />
+		</property>
+	</bean>
+
+	<bean id="AuditOBPalletDAO"
+		class="com.manh.wmos.services.outbound.dao.AuditOBPalletDAOImpl">
+		<property name="persistenceManager">
+			<ref bean="whsePersistenceManager" />
+		</property>
+		<property name="commandBroker">
+			<ref bean="whseCommandBroker" />
+		</property>
+	</bean>
+
+	<bean id="IAuditOBPalletValidator"
+		class="com.manh.wmos.services.outbound.validator.AuditOBPalletValidator" />
+
+	<bean id="AuditOBPalletServiceImpl"
+		class="com.manh.wmos.services.outbound.service.AuditOBPalletServiceImpl">
+		<property name="validator" ref="IAuditOBPalletValidator" />
+	</bean>
+	
+	<bean id="AnchorOBLpnDAO"
+		class="com.manh.wmos.services.outbound.dao.AnchorOBLpnDAOImpl"
+		parent="wmParentDAO" />
+	
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" abstract="false" scope="singleton">
+         <property name="location">
+                    <value>classpath:runtime.properties</value>
+         </property>
+     </bean>
+	
+	<tx:annotation-driven transaction-manager="${transaction.manager}"/>
+	<wm:annotation-bean-managed/>
+
+</beans>
