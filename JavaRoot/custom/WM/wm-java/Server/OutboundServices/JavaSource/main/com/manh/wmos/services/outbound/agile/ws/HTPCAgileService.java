@@ -1,22 +1,15 @@
 package com.manh.wmos.services.outbound.agile.ws;
 
-import java.io.StringWriter;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 
-import org.apache.velocity.Template;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
-
 import com.logistics.javalib.util.Misc;
 import com.manh.ils.ILSApplicationContext;
 import com.manh.mps.rest.AbstractService;
 import com.manh.wm.core.util.HTPCWMAgileLogHelper;
-import com.manh.wmos.services.outbound.agile.data.IHTPCWMAgileCommunicationConstants;
 import com.manh.wmos.services.outbound.agile.service.IHTPCAgileOrderLoadRespService;
 
 public class HTPCAgileService extends AbstractService
@@ -42,13 +35,9 @@ public class HTPCAgileService extends AbstractService
 	 */
 	public String receiveMessage(@Context HttpServletRequest request) throws Exception
 	{
-
 		HTPCWMAgileLogHelper.logEnter(" rest call triggering response XML receiving responseXML : " + request.getParameter("xmlString"));
 
-		// JSONObject json = new JSONObject();
-
 		String status = getResponseService().receiveAgileResponse(request.getParameter("xmlString"), request);
-		// json.put("status", status);
 
 		if (status.equalsIgnoreCase("Success"))
 		{
@@ -59,14 +48,13 @@ public class HTPCAgileService extends AbstractService
 			ackPSCresponse = preparePSacknowledgement("0");
 		}
 
-		HTPCWMAgileLogHelper.logExit();
+		HTPCWMAgileLogHelper.logExit("*** FINAL RESPONSE OF PSC TO AGILE ***\n" + ackPSCresponse);
 		return ackPSCresponse;
-		// return json.toString();
 	}
 
 	/**
 	 * Prepares the acknowledgment from WM for Agile server after processing
-	 * PSC(Post Shipment Confirmation) message, using velocity template.
+	 * PSC(Post Shipment Confirmation) message.
 	 * 
 	 * @param code
 	 *            - the value of Code to be returned in acknowledgment of PSC,
@@ -75,20 +63,22 @@ public class HTPCAgileService extends AbstractService
 	 */
 	private String preparePSacknowledgement(String code)
 	{
-		HTPCWMAgileLogHelper.logEnter("creating the acknowledgment for Post Shipment Confirmation message.");
-		VelocityEngine ve = new VelocityEngine();
-		ve.init();
+		String failDesc = "ErrorProcessingMessage";
+		String successDesc = "Success";
 
-		HTPCWMAgileLogHelper.logDebug("Code received : [" + code + "], Using velocity template : " + IHTPCWMAgileCommunicationConstants.PSC_ACK_TMPL);
-		/* getting the Template - AgilePSCacknowledgment.vm */
-		Template t = ve.getTemplate(IHTPCWMAgileCommunicationConstants.PSC_ACK_TMPL);
-		VelocityContext context = new VelocityContext();
-		context.put("code", code);
-		StringWriter writer = new StringWriter();
-		t.merge(context, writer);
+		HTPCWMAgileLogHelper.logEnter("Code received : [" + code + "], creating the acknowledgment for Post Shipment Confirmation message.");
 
-		HTPCWMAgileLogHelper.logExit("The xml acknowledgement prepared is:\n" + writer);
-		return writer.toString();
+		StringBuffer sb = new StringBuffer("<?xml version=\"1.0\" encoding=\"utf-8\"?><AgileMessageResponse><Status><Code>");
+		sb.append(code);
+		sb.append("</Code><Description>");
+		if (code.equals("1"))
+			sb.append(successDesc);
+		else
+			sb.append(failDesc);
+		sb.append("</Description></Status></AgileMessageResponse>");
+
+		HTPCWMAgileLogHelper.logExit("The xml acknowledgement prepared is:\n" + sb);
+		return sb.toString();
 	}
 
 	/**

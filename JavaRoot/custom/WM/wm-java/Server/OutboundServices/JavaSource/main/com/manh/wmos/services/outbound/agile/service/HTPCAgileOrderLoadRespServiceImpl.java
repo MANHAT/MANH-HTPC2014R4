@@ -35,6 +35,8 @@ public class HTPCAgileOrderLoadRespServiceImpl implements IHTPCAgileOrderLoadRes
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
 	public String receiveAgileResponse(String responseXML, HttpServletRequest request) throws WMCommunicationManagerException
 	{
+		int tranLogId = -1;
+
 		HTPCWMAgileLogHelper.logEnter("agile Response XML : " + responseXML);
 		String responseStatus = Misc.EMPTY_STRING;
 		try
@@ -45,16 +47,45 @@ public class HTPCAgileOrderLoadRespServiceImpl implements IHTPCAgileOrderLoadRes
 			if (messageType.equalsIgnoreCase("Void"))
 			{
 				HTPCWMAgileLogHelper.logDebug("  message type in response xml  : " + messageType);
-				responseProcessor.tranLogEntryForVoidResponse(request);
+				tranLogId = responseProcessor.tranLogEntryForVoidResponse(request);
+				HTPCWMAgileLogHelper.logDebug("TRAN_LOG_ID received : " + tranLogId);
+
 				responseStatus = receiveAgileVoidResponse(responseXML, responseProcessor);
-				responseProcessor.tranLogEntryForVoidResponseAck(request);
+
+				if (responseStatus.equalsIgnoreCase("success") && tranLogId != -1)
+				{
+					responseProcessor.updateTranLogEntryForVoidResponse(tranLogId, IHTPCWMAgileCommunicationConstants.SUCCESS_RESULT_CODE);
+					HTPCWMAgileLogHelper.logDebug("Updated RESULT_CODE of TRAN_LOG table to " + IHTPCWMAgileCommunicationConstants.SUCCESS_RESULT_CODE);
+				}
+				else if (responseStatus.equalsIgnoreCase("error") && tranLogId != -1)
+				{
+					responseProcessor.updateTranLogEntryForVoidResponse(tranLogId, IHTPCWMAgileCommunicationConstants.FAILURE_RESULT_CODE);
+					HTPCWMAgileLogHelper.logDebug("Updated RESULT_CODE of TRAN_LOG table to " + IHTPCWMAgileCommunicationConstants.FAILURE_RESULT_CODE);
+				}
+
+				//responseProcessor.tranLogEntryForVoidResponseAck(request);
 			}
 			else if (messageType.equalsIgnoreCase("Rating"))
 			{
 				HTPCWMAgileLogHelper.logDebug("  message type in response xml  : " + messageType);
-				responseProcessor.tranLogEntryForOrderLoadRequest(request);
+
+				tranLogId = responseProcessor.tranLogEntryForOrderLoadRequest(request);
+				HTPCWMAgileLogHelper.logDebug("TRAN_LOG_ID received : " + tranLogId);
+
 				responseStatus = receiveAgileOrderLoadResponse(responseXML, responseProcessor);
-				responseProcessor.tranLogEntryForOrderLoadRequestAck(request);
+
+				if (responseStatus.equalsIgnoreCase("success") && tranLogId != -1)
+				{
+					responseProcessor.updateTranLogEntryForOrderLoadRequest(tranLogId, IHTPCWMAgileCommunicationConstants.SUCCESS_RESULT_CODE);
+					HTPCWMAgileLogHelper.logDebug("Updated RESULT_CODE of TRAN_LOG table to " + IHTPCWMAgileCommunicationConstants.SUCCESS_RESULT_CODE);
+				}
+				else if (responseStatus.equalsIgnoreCase("error") && tranLogId != -1)
+				{
+					responseProcessor.updateTranLogEntryForOrderLoadRequest(tranLogId, IHTPCWMAgileCommunicationConstants.FAILURE_RESULT_CODE);
+					HTPCWMAgileLogHelper.logDebug("Updated RESULT_CODE of TRAN_LOG table to " + IHTPCWMAgileCommunicationConstants.FAILURE_RESULT_CODE);
+				}
+
+				//responseProcessor.tranLogEntryForOrderLoadRequestAck(request);
 			}
 			else
 			{

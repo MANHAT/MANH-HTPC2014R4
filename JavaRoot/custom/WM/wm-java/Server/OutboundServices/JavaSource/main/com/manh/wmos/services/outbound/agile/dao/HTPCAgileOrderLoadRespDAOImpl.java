@@ -2,6 +2,7 @@ package com.manh.wmos.services.outbound.agile.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -792,7 +793,7 @@ public class HTPCAgileOrderLoadRespDAOImpl extends WMDAOImpl implements IHTPCAgi
 	 * tranLogEntryForVoidResponse()
 	 */
 	@Override
-	public void tranLogEntryForVoidResponse(HttpServletRequest request)
+	public int tranLogEntryForVoidResponse(HttpServletRequest request)
 	{
 		HTPCWMAgileLogHelper.logEnter();
 
@@ -807,13 +808,14 @@ public class HTPCAgileOrderLoadRespDAOImpl extends WMDAOImpl implements IHTPCAgi
 
 		try
 		{
-			createOrUpdateTranLogForVoidResponse(sqlQuery, request);
+			return createOrUpdateTranLogForVoidResponse(sqlQuery, request);
 		}
 		catch (Exception e)
 		{
 			LIFLogger.logError("Exception while saving TranLog entry", e);
 		}
 		HTPCWMAgileLogHelper.logExit("successfully inserted into tran_log");
+		return -1;
 	}
 
 	/**
@@ -822,7 +824,7 @@ public class HTPCAgileOrderLoadRespDAOImpl extends WMDAOImpl implements IHTPCAgi
 	 * @param sqlQuery
 	 * @return
 	 */
-	private void createOrUpdateTranLogForVoidResponse(String sqlQuery, HttpServletRequest request)
+	private int createOrUpdateTranLogForVoidResponse(String sqlQuery, HttpServletRequest request)
 	{
 		HTPCWMAgileLogHelper.logEnter();
 		PreparedStatement stmt = null;
@@ -897,6 +899,15 @@ public class HTPCAgileOrderLoadRespDAOImpl extends WMDAOImpl implements IHTPCAgi
 			stmt.setInt(i++, 0); // BATCH_SIZE
 
 			recordInserted = stmt.executeUpdate();
+			
+			String lastTranLogId = "select SEQ_TRAN_LOG_ID.currval from dual";
+			PreparedStatement stmt2 = conn.prepareStatement(lastTranLogId);
+			ResultSet rs = stmt2.executeQuery();
+			rs.next();
+			int tranLogId = rs.getInt(1);
+			stmt2.close();
+			HTPCWMAgileLogHelper.logExit("HTPCAgileOrderLoadRespDAOImpl::createOrUpdateTranLogForVoidResponse : tran_log_id received is : " + tranLogId);
+			return tranLogId;
 		}
 		catch (Exception e)
 		{
@@ -907,6 +918,8 @@ public class HTPCAgileOrderLoadRespDAOImpl extends WMDAOImpl implements IHTPCAgi
 			JDBCFunc.closeJDBCResources(stmt, conn);
 			HTPCWMAgileLogHelper.logExit(" records inserted into tran_log int recordInserted : " + recordInserted);
 		}
+		HTPCWMAgileLogHelper.logExit("createOrUpdateTranLogForVoidResponse :: After entering record in tran_log, could not fetch the tran_log_id, returning -1.");
+		return -1;
 	}
 
 	/*
@@ -918,7 +931,7 @@ public class HTPCAgileOrderLoadRespDAOImpl extends WMDAOImpl implements IHTPCAgi
 	 * tranLogEntryForOrderLoadRequest()
 	 */
 	@Override
-	public void tranLogEntryForOrderLoadRequest(HttpServletRequest request)
+	public int tranLogEntryForOrderLoadRequest(HttpServletRequest request)
 	{
 		HTPCWMAgileLogHelper.logEnter();
 
@@ -933,21 +946,23 @@ public class HTPCAgileOrderLoadRespDAOImpl extends WMDAOImpl implements IHTPCAgi
 
 		try
 		{
-			createOrUpdateTranLogForOrderLoadRequest(sqlQuery, request);
+			return createOrUpdateTranLogForOrderLoadRequest(sqlQuery, request);
 		}
 		catch (Exception e)
 		{
 			LIFLogger.logError("Exception while saving TranLog entry", e);
 		}
 		HTPCWMAgileLogHelper.logExit("successfully inserted into tran_log");
+		return -1;
 	}
 
 	/**
 	 * Creates or updates the TRAN_LOG entry
 	 * 
 	 * @param sqlQuery
+	 * @return
 	 */
-	private void createOrUpdateTranLogForOrderLoadRequest(String sqlQuery, HttpServletRequest request)
+	private int createOrUpdateTranLogForOrderLoadRequest(String sqlQuery, HttpServletRequest request)
 	{
 		HTPCWMAgileLogHelper.logEnter();
 		PreparedStatement stmt = null;
@@ -1021,6 +1036,16 @@ public class HTPCAgileOrderLoadRespDAOImpl extends WMDAOImpl implements IHTPCAgi
 			stmt.setInt(i++, 0); // BATCH_SIZE
 
 			recordInserted = stmt.executeUpdate();
+
+			String lastTranLogId = "select SEQ_TRAN_LOG_ID.currval from dual";
+			PreparedStatement stmt2 = conn.prepareStatement(lastTranLogId);
+			ResultSet rs = stmt2.executeQuery();
+			rs.next();
+			int tranLogId = rs.getInt(1);
+			stmt2.close();
+			HTPCWMAgileLogHelper.logExit("HTPCAgileOrderLoadRespDAOImpl::createOrUpdateTranLogForOrderLoadRequest : tran_log_id received is : " + tranLogId);
+			return tranLogId;
+
 		}
 		catch (Exception e)
 		{
@@ -1031,6 +1056,8 @@ public class HTPCAgileOrderLoadRespDAOImpl extends WMDAOImpl implements IHTPCAgi
 			JDBCFunc.closeJDBCResources(stmt, conn);
 			HTPCWMAgileLogHelper.logExit(" records inserted into tran_log int recordInserted : " + recordInserted);
 		}
+		HTPCWMAgileLogHelper.logExit("createOrUpdateTranLogForOrderLoadRequest :: After entering record in tran_log, could not fetch the tran_log_id, returning -1.");
+		return -1;
 	}
 
 	/*
@@ -1289,6 +1316,24 @@ public class HTPCAgileOrderLoadRespDAOImpl extends WMDAOImpl implements IHTPCAgi
 		if (mheOutboundDao == null)
 			mheOutboundDao = MheOutboundUtil.getMheOutboundServicesDao();
 		return mheOutboundDao;
+	}
+
+	/** Updates <code>RESULT_CODE</CODE> in TRAN_LOG table.
+	 * @param tranLogId
+	 * @param result_code
+	 */
+	@Override
+	public void updateTranLogEntry(int tranLogId, String result_code)
+	{
+		HTPCWMAgileLogHelper.logEnter("Going to update TRAN_LOG.");
+		String query = "update TRAN_LOG set result_code = :resCode where tran_log_id = :tranLogId ";
+		String[] nameList =
+		{ "resCode", "tranLogId" };
+		Object[] paramValueList =
+		{ result_code, tranLogId };
+		@SuppressWarnings("deprecation")
+		int rows = directSQLUpdate(query, nameList, paramValueList);
+		HTPCWMAgileLogHelper.logExit("Updated " + rows + " rows in TRAN_LOG.");
 	}
 
 }

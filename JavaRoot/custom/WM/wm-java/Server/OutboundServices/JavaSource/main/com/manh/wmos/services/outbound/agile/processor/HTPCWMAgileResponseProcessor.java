@@ -445,12 +445,12 @@ public class HTPCWMAgileResponseProcessor
 	 * tran_log entry for void response
 	 * 
 	 * @param request
+	 * @return
 	 */
-	public void tranLogEntryForVoidResponse(HttpServletRequest request)
+	public int tranLogEntryForVoidResponse(HttpServletRequest request)
 	{
 		HTPCWMAgileLogHelper.logEnter("tran_log entry for void response");
-		getResponseDAO().tranLogEntryForVoidResponse(request);
-		HTPCWMAgileLogHelper.logExit();
+		return getResponseDAO().tranLogEntryForVoidResponse(request);
 	}
 
 	/**
@@ -458,11 +458,10 @@ public class HTPCWMAgileResponseProcessor
 	 * 
 	 * @param request
 	 */
-	public void tranLogEntryForOrderLoadRequest(HttpServletRequest request)
+	public int tranLogEntryForOrderLoadRequest(HttpServletRequest request)
 	{
 		HTPCWMAgileLogHelper.logEnter("tran_log entry for order load request");
-		getResponseDAO().tranLogEntryForOrderLoadRequest(request);
-		HTPCWMAgileLogHelper.logExit();
+		return getResponseDAO().tranLogEntryForOrderLoadRequest(request);
 	}
 
 	/**
@@ -486,6 +485,32 @@ public class HTPCWMAgileResponseProcessor
 	{
 		HTPCWMAgileLogHelper.logEnter("tran_log entry for order load response Acknowledgment from WM to Agile");
 		getResponseDAO().tranLogEntryForOrderLoadRequestAck(request);
+		HTPCWMAgileLogHelper.logExit();
+	}
+
+	/**
+	 * Updates <code>RESULT_CODE</CODE> in TRAN_LOG table for Rating PSC.
+	 * 
+	 * @param tranLogId
+	 * @param result_code
+	 */
+	public void updateTranLogEntryForOrderLoadRequest(int tranLogId, String result_code)
+	{
+		HTPCWMAgileLogHelper.logEnter("in updateTranLogEntryForOrderLoadRequest");
+		getResponseDAO().updateTranLogEntry(tranLogId, result_code);
+		HTPCWMAgileLogHelper.logExit();
+	}
+
+	/**
+	 * Updates <code>RESULT_CODE</CODE> in TRAN_LOG table for Void PSC.
+	 * 
+	 * @param tranLogId
+	 * @param result_code
+	 */
+	public void updateTranLogEntryForVoidResponse(int tranLogId, String result_code)
+	{
+		HTPCWMAgileLogHelper.logEnter("in updateTranLogEntryForVoidResponse");
+		getResponseDAO().updateTranLogEntry(tranLogId, result_code);
 		HTPCWMAgileLogHelper.logExit();
 	}
 

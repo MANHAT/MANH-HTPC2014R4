@@ -1,20 +1,38 @@
 package com.manh.wmos.services.mheoutbound.agile.dao;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import com.logistics.javalib.JavalibDef;
+import com.logistics.javalib.persistence.jdbc.JDBCConnectionCreator;
+import com.logistics.javalib.persistence.jdbc.JDBCFunc;
 import com.logistics.javalib.util.Misc;
 import com.manh.wm.core.util.HTPCWMAgileLogHelper;
 import com.manh.wm.dao.WMDAOImpl;
 import com.manh.wmos.services.mheoutbound.dao.IMHEOutboundDAO;
 import com.manh.wmos.services.mheoutbound.helper.MheOutboundUtil;
+import com.manh.wmos.services.outbound.agile.data.IHTPCWMAgileCommunicationConstants;
 
 public class HTPCAgileDAOImpl extends WMDAOImpl
 {
 
-	private IMHEOutboundDAO mheOutboundDao = null;
+	public HTPCAgileDAOImpl()
+	{
+		super();
+		this.connCreator = JavalibDef.CONNECTION_CREATOR;
+	}
+
+	/**
+	 * This holds JDBC connection
+	 */
+	private JDBCConnectionCreator	connCreator;
+
+	private IMHEOutboundDAO			mheOutboundDao	= null;
 
 	public HashMap<String, String> getHeaderData(String tcLpnId, String warehouse)
 	{
@@ -28,8 +46,8 @@ public class HTPCAgileDAOImpl extends WMDAOImpl
 		query.append(" L.ORDER_ID, L.REF_FIELD_2 FROM ORDERS O, LPN L, FACILITY F, SYS_CODE S ");
 		query.append(" WHERE L.ORDER_ID = O.ORDER_ID AND L.INBOUND_OUTBOUND_INDICATOR = 'O' AND L.TC_LPN_ID = :tcLpnId AND L.C_FACILITY_ID = F.FACILITY_ID AND F.WHSE = :warehouse	AND S.CODE_TYPE = 'HZT' AND S.REC_TYPE = 'C' ");
 
-		HTPCWMAgileLogHelper.logDebug("Header Query formed is : ["+query+"]");
-		
+		HTPCWMAgileLogHelper.logDebug("Header Query formed is : [" + query + "]");
+
 		String[] nameList =
 		{ "tcLpnId", "warehouse" };
 		Object[] paramValueList =
@@ -76,8 +94,8 @@ public class HTPCAgileDAOImpl extends WMDAOImpl
 			query.append(" WHERE LD.LPN_ID = :lpnId and  OLI.ORDER_ID = :orderid and OLI.ITEM_ID = LD.ITEM_ID and SU.SIZE_UOM_ID = IC.BASE_STORAGE_UOM_ID");
 			query.append(" and LD.ITEM_ID = IC.ITEM_ID and L.LPN_ID = LD.LPN_ID and L.ORDER_ID = O.ORDER_ID and LD.SIZE_VALUE > 0");
 
-			HTPCWMAgileLogHelper.logDebug("Line Item Query formed is : ["+query+"]");
-			
+			HTPCWMAgileLogHelper.logDebug("Line Item Query formed is : [" + query + "]");
+
 			String[] nameList =
 			{ "lpnId", "orderid" };
 			Object[] paramValueList =
@@ -107,6 +125,14 @@ public class HTPCAgileDAOImpl extends WMDAOImpl
 		return output;
 	}
 
+	/**
+	 * Updates STAT_CODE of EVENT_MESSAGE table.
+	 * 
+	 * @param eventId
+	 * @param tc_lpn_id
+	 * @param newStatCode
+	 * @return
+	 */
 	@SuppressWarnings("deprecation")
 	public int updateStatCode(int eventId, String tc_lpn_id, String newStatCode)
 	{
@@ -119,6 +145,12 @@ public class HTPCAgileDAOImpl extends WMDAOImpl
 		return rowUpdated;
 	}
 
+	/**
+	 * Updates LPN.REF_FIELD_2
+	 * 
+	 * @param orderHeaderId
+	 * @param lpnId
+	 */
 	@SuppressWarnings("deprecation")
 	public void updateLpnRefField2(String orderHeaderId, String lpnId)
 	{
@@ -129,6 +161,78 @@ public class HTPCAgileDAOImpl extends WMDAOImpl
 		Object[] paramValueList =
 		{ orderHeaderId, lpnId };
 		directSQLUpdate(query, nameList, paramValueList);
+	}
+
+	/**
+	 * Creates a TRAN_LOG and TRAN_LOG_MESSAGE table entry with the messages.
+	 * 
+	 * @param message
+	 *            - The <code>MSG_TYPE</code> in TRAN_LOG table.
+	 * @param msg_line_text
+	 *            - The <code>MSG_LINE_TEXT</code> in TRAN_LOG_MESSAGE table.
+	 */
+	public void createTranLogAndTranLogMessageEntry(String message, String msg_line_text)
+	{
+		HTPCWMAgileLogHelper.logEnter("Entering createTranLogAndTranLogMessageEntry()..");
+
+		String sqlQuery = " INSERT INTO TRAN_LOG "
+				+ "(TRAN_LOG_ID, SEQUENCE_NUMBER, MESSAGE_ID, DIRECTION, ORIGIN_TYPE, ORIGIN_FORMAT, MSG_TYPE, DEST_TYPE, DEST_FORMAT, RESULT_CODE, TRAN_LOG_LEVEL, HAS_ERRORS) "
+				+ "VALUES (SEQ_TRAN_LOG_ID.nextval, SEQ_TRAN_LOG_MESSAGE_ID.nextval, SEQ_TRAN_LOG_MESSAGE_ID.nextval, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+		String tranLogIdQuery = "SELECT SEQ_TRAN_LOG_ID.currval AS TRAN_LOG_ID FROM DUAL";
+
+		String tranLogMsgQuery = "INSERT INTO TRAN_LOG_MESSAGE (TRAN_LOG_ID, MSG_LINE_NUMBER, MSG_LINE_TEXT) VALUES (?,?,?)";
+
+		Connection conn = null;
+		PreparedStatement stmt = null, stmt2 = null;
+		int recordsInserted = 0;
+		int tranLogId = 0;
+		try
+		{
+			conn = connCreator.createConnection();
+			stmt = conn.prepareStatement(sqlQuery);
+
+			int i = 1;
+			stmt.setString(i++, "I"); // DIRECTION
+			stmt.setString(i++, IHTPCWMAgileCommunicationConstants.AGILE); // ORIGIN_TYPE
+			stmt.setString(i++, IHTPCWMAgileCommunicationConstants.MESSAGE_FORMAT); // ORIGIN_FORMAT
+			stmt.setString(i++, message); // MSG_TYPE
+			stmt.setString(i++, IHTPCWMAgileCommunicationConstants.WM); // DEST_TYPE
+			stmt.setString(i++, IHTPCWMAgileCommunicationConstants.MESSAGE_FORMAT); // DEST_FORMAT
+			stmt.setInt(i++, 0); // RESULT_CODE
+			stmt.setString(i++, "Always"); // TRAN_LOG_LEVEL
+			stmt.setInt(i++, 0); // HAS_ERRORS
+
+			recordsInserted = stmt.executeUpdate();
+			HTPCWMAgileLogHelper.logDebug("Records Inserted in TRAN_LOG: " + recordsInserted);
+
+			ResultSet rs = stmt.executeQuery(tranLogIdQuery);
+			if (rs.next())
+			{
+				HTPCWMAgileLogHelper.logDebug("ResultSet has data in it..");
+				tranLogId = rs.getInt("TRAN_LOG_ID");
+			}
+			HTPCWMAgileLogHelper.logDebug("TRAN_LOG_ID : " + tranLogId);
+
+			stmt2 = conn.prepareStatement(tranLogMsgQuery);
+			stmt2.setInt(1, tranLogId); //TRAN_LOG_ID
+			stmt2.setInt(2, 0); //MSG_LINE_NUMBER
+			stmt2.setString(3, msg_line_text); //MSG_LINE_TEXT
+
+			recordsInserted = stmt2.executeUpdate();
+			HTPCWMAgileLogHelper.logDebug("Records Inserted in TRAN_LOG_MESSAGE: " + recordsInserted);
+
+		}
+		catch (Exception e)
+		{
+			HTPCWMAgileLogHelper.logException(e);
+		}
+		finally
+		{
+			JDBCFunc.closeJDBCResources(stmt2);
+			JDBCFunc.closeJDBCResources(stmt, conn);
+			HTPCWMAgileLogHelper.logExit("Exiting createTranLogAndTranLogMessageEntry()..");
+		}
 	}
 
 	public IMHEOutboundDAO getMheOutboundDao()

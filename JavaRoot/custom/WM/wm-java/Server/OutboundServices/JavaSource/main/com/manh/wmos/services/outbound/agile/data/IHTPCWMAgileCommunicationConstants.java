@@ -27,14 +27,18 @@ public interface IHTPCWMAgileCommunicationConstants extends WMConstants
 	public static final String SUCCESS = "Success";
 
 	public static final String AGILE = "AGL";
-	public static final String AGILE_RATING = "Agile_Rating";
+	//public static final String AGILE_RATING = "Agile_Rating";
+	public static final String AGILE_RATING = "Agile_PSC";
 	public static final String AGILE_VOID = "Agile_Void";
 	public static final String AGILE_RATING_ACK = "Agile_Rating_Acknowledgment";
 	public static final String AGILE_VOID_ACK = "Agile_Void_Acknowledgment";
 	public static final String MESSAGE_FORMAT = "XML";
 	public static final String WM = "WM";
 	
-	/** PSC_ACK_TMPL = AgilePSCacknowledgment.vm*/
-	public static final String PSC_ACK_TMPL = "AgilePSCacknowledgment.vm";
+	public static final String SUCCESS_RESULT_CODE = "25";
+	public static final String FAILURE_RESULT_CODE = "24";
+	
+	public static final String	OLR_SUCCESS	= "Order_Load_Successful";
+	public static final String	OLR_FAILURE	= "Order_Load_Failed";
 
 }

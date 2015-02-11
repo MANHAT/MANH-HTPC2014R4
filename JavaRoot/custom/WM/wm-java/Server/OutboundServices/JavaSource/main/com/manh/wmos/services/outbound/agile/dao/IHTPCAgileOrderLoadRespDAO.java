@@ -115,14 +115,16 @@ public interface IHTPCAgileOrderLoadRespDAO {
 	/**
 	 * tran_log entry for void response
 	 * @param request 
+	 * @return 
 	 */
-	public void tranLogEntryForVoidResponse(HttpServletRequest request);
+	public int tranLogEntryForVoidResponse(HttpServletRequest request);
 
 	/**
 	 * tran_log entry for void response
 	 * @param request 
+	 * @return 
 	 */
-	public void tranLogEntryForOrderLoadRequest(HttpServletRequest request);
+	public int tranLogEntryForOrderLoadRequest(HttpServletRequest request);
 
 	/**
 	 * tran_log entry for void response Acknowledgment from WM to Agile
@@ -137,5 +139,11 @@ public interface IHTPCAgileOrderLoadRespDAO {
 	public void tranLogEntryForOrderLoadRequestAck(HttpServletRequest request);
 	
 	public IMHEOutboundDAO getMheOutboundDao();
+
+	/** Updates <code>RESULT_CODE</CODE> in TRAN_LOG table.
+	 * @param tranLogId
+	 * @param result_code
+	 */
+	public void updateTranLogEntry(int tranLogId, String result_code);
 
 }

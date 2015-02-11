@@ -32,14 +32,15 @@ import com.manh.wmos.services.mheoutbound.agile.data.HTPCOrder;
 import com.manh.wmos.services.mheoutbound.agile.data.HTPCPierbridgeOrderLoadRequestData;
 import com.manh.wmos.services.mheoutbound.agile.data.HTPCRecord;
 import com.manh.wmos.services.mheoutbound.agile.data.HTPCShip;
+import com.manh.wmos.services.outbound.agile.data.IHTPCWMAgileCommunicationConstants;
 import com.manh.wmos.services.systemctrl.helper.SystemCtrlServiceLocator;
 import com.manh.wmos.services.wmcommon.helper.MheEventMsgHelper.MheMsgStatCode;
 
 public class HTPCAgileOrderLoadRequest
 {
 
-	static WMLogger log;
-	private static EventMessage eventMessage;
+	static WMLogger				log;
+	private static EventMessage	eventMessage;
 
 	public static EventMessage getEventMessage()
 	{
@@ -91,6 +92,7 @@ public class HTPCAgileOrderLoadRequest
 				// Router.
 				if (data != null)
 				{
+					String xmlRespFromAgile = Misc.EMPTY_STRING;
 					HTPCWMAgileLogHelper.logEnter("HTPCPierbridgeOrderLoadRequestData data received for routing to Agile");
 					routerResp = HTPCAgileTranslator.routeAgileRequestMessage(eventMsg, data);
 					String respStatus = routerResp.getPersistenceState().getLiteral();
@@ -100,26 +102,30 @@ public class HTPCAgileOrderLoadRequest
 						List<IRouterResponseDetails> routerRespDtlList = routerResp.getRouterResponseDetails();
 						for (IRouterResponseDetails resp : routerRespDtlList)
 						{
-							String xmlRespFromAgile = (String) resp.getCommResponse().getResponseDetails();
+							xmlRespFromAgile = (String) resp.getCommResponse().getResponseDetails();
 							HTPCWMAgileLogHelper.logDebug("Response from AGILE server : \n" + xmlRespFromAgile);
 							agileResponseCodeAndOrderId = parseAgileRespose(xmlRespFromAgile);
 						}
 						if (agileResponseCodeAndOrderId[1].equals("1"))
 						{
-							getAgileDAO().updateLpnRefField2(agileResponseCodeAndOrderId[0], lpnId); 
+							getAgileDAO().updateLpnRefField2(agileResponseCodeAndOrderId[0], lpnId);
 
 							// updates STAT_CODE in EVENT_MESSAGE to '50', which
 							// indicates message has been sent to Agile.
 							eventMsg.setErrorSeqNbr(HTPCAgileEnum.HTPCErrorSeqNbr.SUCCESS.value);
 							eventMsg.setStatCode(50);
 							getAgileDAO().getMheOutboundDao().updateEventMessage(eventMsg);
+							// tran_log and tran_log_message entry.
+							getAgileDAO().createTranLogAndTranLogMessageEntry(IHTPCWMAgileCommunicationConstants.OLR_SUCCESS, xmlRespFromAgile);
 							HTPCWMAgileLogHelper.logDebug("Updated STAT_CODE to 50, and for LPN_ID : " + lpnId);
 						}
 						else
 						{
-							eventMsg.setErrorSeqNbr(HTPCAgileEnum.HTPCErrorSeqNbr.IMPROPER_OLR_RESPONSE.value);		// i.e. 997
-							eventMsg.setStatCode(MheMsgStatCode.SEND_MSG_ERROR.stat);			// i.e. 96.
+							eventMsg.setErrorSeqNbr(HTPCAgileEnum.HTPCErrorSeqNbr.IMPROPER_OLR_RESPONSE.value); // 997.
+							eventMsg.setStatCode(MheMsgStatCode.SEND_MSG_ERROR.stat); // 96.
 							getAgileDAO().getMheOutboundDao().updateEventMessage(eventMsg);
+							// tran_log and tran_log_message entry.
+							getAgileDAO().createTranLogAndTranLogMessageEntry(IHTPCWMAgileCommunicationConstants.OLR_FAILURE, xmlRespFromAgile);
 							HTPCWMAgileLogHelper.logDebug("Updated STAT_CODE to 96.");
 						}
 					}
@@ -132,8 +138,10 @@ public class HTPCAgileOrderLoadRequest
 			}
 			else
 			{
-				eventMsg.setErrorSeqNbr(HTPCAgileEnum.HTPCErrorSeqNbr.INVALID_FACILITY_STATUS.value);	// i.e. 996
-				eventMsg.setStatCode(MheMsgStatCode.SEND_MSG_ERROR.stat);				// i.e. 96.
+				eventMsg.setErrorSeqNbr(HTPCAgileEnum.HTPCErrorSeqNbr.INVALID_FACILITY_STATUS.value); // i.e.
+																										// 996
+				eventMsg.setStatCode(MheMsgStatCode.SEND_MSG_ERROR.stat); // i.e.
+																			// 96.
 				getAgileDAO().getMheOutboundDao().updateEventMessage(eventMsg); // setting
 																				// the
 																				// status
@@ -267,10 +275,10 @@ public class HTPCAgileOrderLoadRequest
 			log.logDebug("Got Exception while trying to get the sys_code from in populateAgileDataBeans()");
 			log.logException(e);
 		}
-		
+
 		if (eventId == 9002 || eventId == 9003)
 			pbolrDataBean.setOrderHeaderId(hdata.get("REF_FIELD_2"));
-		
+
 		pbolrDataBean.setHeader(headerBean);
 		pbolrDataBean.setLineItems(lineItemsList);
 
